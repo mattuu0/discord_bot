@@ -1,2 +1,3 @@
 /node_bot/src/node_modules
 node_bot/src/config.json
+node_bot/src/build/config.json
