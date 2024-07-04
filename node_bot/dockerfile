@@ -1,0 +1,6 @@
+FROM node:lts-bullseye
+
+RUN apt update
+RUN apt install wget -y
+
+WORKDIR /root/node_bot
