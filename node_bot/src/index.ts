@@ -14,15 +14,13 @@ for (const file of commandFiles) {
     commands[command.data.name] = command
 }
 
-console.log(commands);
-
 client.once("ready", async () => {
     const data = []
     for (const commandName in commands) {
         data.push(commands[commandName].data)
     }
 
-    console.log(await client.application?.commands.set(data, config.serverid));
+    await client.application?.commands.set(data, config.serverid);
     console.log("Ready!");
 });
 
@@ -31,8 +29,6 @@ client.on("interactionCreate", async (interaction) => {
         return;
     }
     const command = commands[interaction.commandName];
-
-    console.log(commands);
 
     try {
         await command.execute(interaction);

@@ -46,14 +46,13 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     commands[command.data.name] = command;
 }
-console.log(commands);
 client.once("ready", () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const data = [];
     for (const commandName in commands) {
         data.push(commands[commandName].data);
     }
-    console.log(yield ((_a = client.application) === null || _a === void 0 ? void 0 : _a.commands.set(data, config.serverid)));
+    yield ((_a = client.application) === null || _a === void 0 ? void 0 : _a.commands.set(data, config.serverid));
     console.log("Ready!");
 }));
 client.on("interactionCreate", (interaction) => __awaiter(void 0, void 0, void 0, function* () {
@@ -61,7 +60,6 @@ client.on("interactionCreate", (interaction) => __awaiter(void 0, void 0, void 0
         return;
     }
     const command = commands[interaction.commandName];
-    console.log(commands);
     try {
         yield command.execute(interaction);
     }
