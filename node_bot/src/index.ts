@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Client, Events, GatewayIntentBits ,Interaction, CacheType} from 'discord.js';
 import fs from 'fs'
 
 // config.jsonの内容が増えたときのことも考えて全部インポートしている
@@ -24,21 +24,44 @@ client.once("ready", async () => {
     console.log("Ready!");
 });
 
-client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isCommand()) {
-        return;
-    }
+//コマンドに対する応答
+async function Command_Interaction(interaction : any) {
+    //コマンドを取得
     const command = commands[interaction.commandName];
 
     try {
+        //コマンドを実行
         await command.execute(interaction);
     } catch (error) {
+        //エラー処理
         console.error(error);
         await interaction.reply({
-            content: 'There was an error while executing this command!',
+            content: 'コマンドの実行に失敗しました',
             ephemeral: true,
         })
     }
+}
+
+//モーダルの応答
+async function SubmitModal(interaction:any) {
+    console.log(interaction.customId);
+}
+
+client.on(Events.InteractionCreate, async (interaction) => {
+    //コマンドかどうか判定
+    if (interaction.isCommand()) {
+        //コマンドを実行
+        await Command_Interaction(interaction);
+        return;
+    }
+
+    //インタラクションの場合
+    if (interaction.isModalSubmit()) {
+        //コマンドを実行
+        await SubmitModal(interaction);
+        return;
+    }
+
 });
 
 client.login(config.token);

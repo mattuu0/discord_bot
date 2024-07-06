@@ -55,20 +55,43 @@ client.once("ready", () => __awaiter(void 0, void 0, void 0, function* () {
     yield ((_a = client.application) === null || _a === void 0 ? void 0 : _a.commands.set(data, config.serverid));
     console.log("Ready!");
 }));
-client.on("interactionCreate", (interaction) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!interaction.isCommand()) {
+//コマンドに対する応答
+function Command_Interaction(interaction) {
+    return __awaiter(this, void 0, void 0, function* () {
+        //コマンドを取得
+        const command = commands[interaction.commandName];
+        try {
+            //コマンドを実行
+            yield command.execute(interaction);
+        }
+        catch (error) {
+            //エラー処理
+            console.error(error);
+            yield interaction.reply({
+                content: 'コマンドの実行に失敗しました',
+                ephemeral: true,
+            });
+        }
+    });
+}
+//モーダルの応答
+function SubmitModal(interaction) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log(interaction.customId);
+    });
+}
+client.on(discord_js_1.Events.InteractionCreate, (interaction) => __awaiter(void 0, void 0, void 0, function* () {
+    //コマンドかどうか判定
+    if (interaction.isCommand()) {
+        //コマンドを実行
+        yield Command_Interaction(interaction);
         return;
     }
-    const command = commands[interaction.commandName];
-    try {
-        yield command.execute(interaction);
-    }
-    catch (error) {
-        console.error(error);
-        yield interaction.reply({
-            content: 'There was an error while executing this command!',
-            ephemeral: true,
-        });
+    //インタラクションの場合
+    if (interaction.isModalSubmit()) {
+        //コマンドを実行
+        yield SubmitModal(interaction);
+        return;
     }
 }));
 client.login(config.token);

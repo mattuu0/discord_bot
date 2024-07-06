@@ -19,6 +19,11 @@ module.exports = {
 			.setTitle('モーダルの例です');
 
 		modal.addComponents(actionRow);
+
+		//IDを設定
+		modal.setCustomId('modalTest');
+
+		//モーダル表示
 		await interaction.showModal(modal);
 	},
 };
