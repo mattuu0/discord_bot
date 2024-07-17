@@ -50,10 +50,20 @@ module.exports = {
 		//ランダムなファイルを取得
 		let filename = files[Math.floor(Math.random() * files.length)];
 
+		const mofu_button = new ButtonBuilder()
+			.setCustomId(GetCustomID('mofusand_button'))
+			.setLabel('もふる')
+			.setStyle(ButtonStyle.Primary);
+
+		//ActionRow
+		const row = new ActionRowBuilder()
+			.addComponents(mofu_button) as ActionRowBuilder<ButtonBuilder>;
+
 		//送信
 		await interaction.reply({
 			files: [`./もふもふモフサンド/${filename}`],
-			ephemeral : true
+			ephemeral : true,
+			components: [row]
 		});
 	}
 };
