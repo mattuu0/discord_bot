@@ -14,17 +14,21 @@ function GetCustomID(customid : string) {
 }
 
 module.exports = {
+	//コマンドID
 	CID : CommandID,
 
+	//コマンドのデータ
 	data: new SlashCommandBuilder()
 		.setName(Command)
 		.setDescription('show mofusand image!'),
 
+	//コマンド初期化
 	Init() {
 		//ファイル一覧を取得
 		files = fs.readdirSync('./もふもふモフサンド');
 	},
 
+	//コマンドが実行されてたとき
  	async execute(interaction: CommandInteraction) {
 		//ボタン
 		const mofu_button = new ButtonBuilder()
@@ -41,6 +45,7 @@ module.exports = {
 		});
 	},
 
+	//ボタンとかが押されたとき
 	async Interection(interaction: any) {
 		//ランダムなファイルを取得
 		let filename = files[Math.floor(Math.random() * files.length)];
