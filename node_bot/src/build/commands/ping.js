@@ -14,6 +14,9 @@ module.exports = {
     data: new discord_js_1.SlashCommandBuilder()
         .setName('ping')
         .setDescription('Replies with Pong!'),
+    Init() {
+        console.log('ping');
+    },
     execute(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
             yield interaction.reply('Pong!');

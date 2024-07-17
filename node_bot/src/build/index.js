@@ -41,15 +41,28 @@ const fs_1 = __importDefault(require("fs"));
 const config = __importStar(require("./config.json"));
 const client = new discord_js_1.Client({ intents: [discord_js_1.GatewayIntentBits.Guilds] });
 const commands = {};
+const command_datas = {};
 const commandFiles = fs_1.default.readdirSync('./build/commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
+    try { //コマンド初期化
+        command.Init();
+    }
+    catch (error) {
+        console.error(error);
+    }
+    //コマンドID設定
+    if (command.CID != undefined) {
+        command_datas[command.CID] = command;
+    }
+    //コマンド情報設定
     commands[command.data.name] = command;
 }
 client.once("ready", () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const data = [];
     for (const commandName in commands) {
+        //コマンド登録
         data.push(commands[commandName].data);
     }
     yield ((_a = client.application) === null || _a === void 0 ? void 0 : _a.commands.set(data, config.serverid));
@@ -74,6 +87,28 @@ function Command_Interaction(interaction) {
         }
     });
 }
+//ボタンに対する応答
+function Button_Interaction(interaction) {
+    return __awaiter(this, void 0, void 0, function* () {
+        //ボタンを取得
+        const buttonid = interaction.customId;
+        const parse_data = JSON.parse(atob(buttonid));
+        //コマンド取得
+        const command = command_datas[parse_data["CommandID"]];
+        try {
+            //コマンドを実行
+            yield command.Interection(interaction);
+        }
+        catch (error) {
+            //エラー処理
+            console.error(error);
+            yield interaction.reply({
+                content: 'エラーだよ',
+                ephemeral: true,
+            });
+        }
+    });
+}
 //モーダルの応答
 function SubmitModal(interaction) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -81,6 +116,13 @@ function SubmitModal(interaction) {
     });
 }
 client.on(discord_js_1.Events.InteractionCreate, (interaction) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(interaction);
+    //ボタンかどうか
+    if (interaction.isButton()) {
+        //ボタンを実行
+        yield Button_Interaction(interaction);
+        return;
+    }
     //コマンドかどうか判定
     if (interaction.isCommand()) {
         //コマンドを実行

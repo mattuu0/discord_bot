@@ -6,6 +6,10 @@ module.exports = {
 		.setName('ping')
 		.setDescription('Replies with Pong!'),
 
+	Init() {
+		console.log('ping');
+	},
+
  	async execute(interaction: CommandInteraction) {
 
 		await interaction.reply('Pong!');
