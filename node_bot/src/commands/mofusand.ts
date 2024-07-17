@@ -47,7 +47,8 @@ module.exports = {
 
 		//送信
 		await interaction.reply({
-			files: [`./もふもふモフサンド/${filename}`]
+			files: [`./もふもふモフサンド/${filename}`],
+			ephemeral : true
 		});
 	}
 };
