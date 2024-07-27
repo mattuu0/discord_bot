@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { Client, CommandInteraction, SlashCommandBuilder } from "discord.js";
 
 
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
 		console.log('ping');
 	},
 
- 	async execute(interaction: CommandInteraction) {
+ 	async execute(interaction: CommandInteraction,client: Client) {
 
 		await interaction.reply('Pong!');
 	},

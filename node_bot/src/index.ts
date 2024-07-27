@@ -1,19 +1,24 @@
-import { Client, Events, GatewayIntentBits, ButtonStyle, ActionRowBuilder, ButtonBuilder, TextChannel } from 'discord.js';
-import fs from 'fs'
+//必要なライブラリ
+import { Client, Events, GatewayIntentBits, ButtonStyle, ActionRowBuilder, ButtonBuilder, TextChannel, ButtonInteraction } from 'discord.js';
+import fs from 'fs';
+const process = require('process');
 
-// config.jsonの内容が増えたときのことも考えて全部インポートしている
-import * as config from './config.json';
-
+//Discord クライアント
 const client: Client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+//グローバル変数
 const commands: any = {};
 const command_datas : any = {};
+
+//コマンド一覧
 const commandFiles = fs.readdirSync('./build/commands').filter(file => file.endsWith('.js'))
 
+//コマンドを読み込む
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
 
-    try {    //コマンド初期化
+    try {    
+        //コマンド初期化
         command.Init();
     } catch (error) {
         console.error(error);
@@ -28,6 +33,7 @@ for (const file of commandFiles) {
     commands[command.data.name] = command;
 }
 
+//初期化成功時
 client.once("ready", async () => {
     const data = []
     for (const commandName in commands) {
@@ -35,7 +41,8 @@ client.once("ready", async () => {
         data.push(commands[commandName].data)
     }
 
-    await client.application?.commands.set(data, config.serverid);
+    //コマンドを設定
+    await client.application?.commands.set(data, process.env.SERVERID);
     console.log("Ready!");
 });
 
@@ -46,7 +53,7 @@ async function Command_Interaction(interaction: any) {
 
     try {
         //コマンドを実行
-        await command.execute(interaction);
+        await command.execute(interaction,client);
     } catch (error) {
         //エラー処理
         console.error(error);
@@ -58,7 +65,7 @@ async function Command_Interaction(interaction: any) {
 }
 
 //ボタンに対する応答
-async function Button_Interaction(interaction: any) {
+async function Button_Interaction(interaction: ButtonInteraction) {
     //ボタンを取得
     const buttonid = interaction.customId;
     const parse_data = JSON.parse(atob(buttonid));
@@ -68,7 +75,7 @@ async function Button_Interaction(interaction: any) {
 
     try {
         //コマンドを実行
-        await command.Interection(interaction);
+        await command.Interection(interaction,client);
     } catch (error) {
         //エラー処理
         console.error(error);
@@ -85,7 +92,7 @@ async function SubmitModal(interaction: any) {
 }
 
 client.on(Events.InteractionCreate, async (interaction: any) => {
-    console.log(interaction);
+    // console.log(interaction);
 
     //ボタンかどうか
     if (interaction.isButton()) {
@@ -110,4 +117,4 @@ client.on(Events.InteractionCreate, async (interaction: any) => {
 
 });
 
-client.login(config.token);
+client.login(process.env.TOKEN);

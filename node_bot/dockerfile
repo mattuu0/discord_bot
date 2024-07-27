@@ -1,6 +1,32 @@
-FROM node:lts-bullseye
+# typescript トランスパイル用
+FROM node:lts-bullseye AS builder
 
-RUN apt update
-RUN apt install wget -y
+# ソースをコピー
+COPY ./src /root/node_bot
 
+#作業ディレクトリを設定
 WORKDIR /root/node_bot
+
+# パッケージをインストール
+RUN npm install
+
+#トランスパイル
+RUN ["./node_modules/.bin/tsc","--build","--verbose"]
+
+# 実行用の環境
+FROM node:lts-alpine3.20
+
+#作業ディレクトリ設定
+WORKDIR /app
+
+# ファイルをコピー
+COPY --from=builder /root/node_bot/build ./build
+COPY --from=builder /root/node_bot/package.json .
+
+#モフサンドのフォルダをコピー
+COPY ./src/mofumofu ./mofumofu
+
+#インストール
+RUN npm install
+
+CMD ["node","./build/index.js"]

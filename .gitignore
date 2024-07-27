@@ -1,4 +1,6 @@
 /node_bot/src/node_modules
 node_bot/src/config.json
 node_bot/src/build/
-node_bot/src/もふもふモフサンド/*
+node_bot/src/mofumofu/*
+node_bot/build.sh
+node_bot/mofubot.tar
